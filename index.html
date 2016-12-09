@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="css/gstyle.css">
+    <script src="js/gjs.js"></script>
+</head>
+<body>
+    <div>
+        <div class="logo">
+            <img src="https://cdn1.iconfinder.com/data/icons/brands-vol-1/76/7-128.png" alt="logo">
+        </div>
+        <div class="search-module">
+            <div class="search">
+                <input type="text" class="searchbox">
+            </div>
+
+            <div class="buttons">
+                <button type="button" class="btn" id="search" onclick="doSearch()">Wiki搜索</button>
+                <a href="https://en.wikipedia.org/wiki/Special:Random" target="_blank">
+                    <button type="button" class="btn" id="try">试试手气</button>
+                </a>
+            </div>
+
+        </div>
+        <div id="result"></div>
+    </div>
+
+    <!--JavaScript-->
+    <script>
+        function doSearch() {
+            $.ajax({
+                url: ("https://en.wikipedia.org/w/api.php"),
+                jsonp: "callback",
+                dataType: "jsonp",
+                data: {
+                    action: "query",
+                    format: "json",
+                    prop: "extracts",
+                    generator: "search",
+                    exsentences: "1",
+                    exlimit: "10",
+                    exintro: "1",
+                    gsrsearch: $(".searchbox").val()
+                },
+                xhrFields: {
+                    withCredentials: true
+                },
+                success: displayResult
+            });
+        }
+        
+        function displayResult(data) {
+            var obj = data.query.pages;
+            var curid,title,extract;
+            $("#result").html("");
+            for(var prop in obj){
+                curid = obj[prop].pageid;
+                title = obj[prop].title;
+                extract = obj[prop].extract;
+                var outstring = "";
+
+                outstring += "<div class='item'>";
+                outstring += "<a href='https://en.wikipedia.org/?curid=" + curid + "' target='_blank'>";
+                outstring += "<h4>" + title + "</h4>";
+                outstring += extract;
+                outstring += "</a>"
+                outstring += "</div>"
+
+                $("#result").append(outstring);
+            }
+        }
+    </script>
+</body>
+</html>
